@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -32,6 +33,7 @@ Route::middleware([
 route::get('/redirect', [HomeController::class, 'redirect']);
 
 
+
 // All products
 Route::get('/admin/products', [ProductController::class, 'Index'])->middleware('auth')->middleware('is_admin');
 
@@ -52,3 +54,5 @@ Route::get('/admin/products/{product}/edit', [ProductController::class, 'Edit'])
 
 // Update product
 Route::put('/admin/products/{product}/edit', [ProductController::class, 'Update'])->middleware('auth');
+
+Route::post('/user/profile/product', [AuthController::class, 'Update']);

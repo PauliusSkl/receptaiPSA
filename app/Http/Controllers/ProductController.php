@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 class ProductController extends Controller
 {
     // Show all listings
-    public function index()
+    public function Index()
     {
 
         //get all products but instead of user_id get owner name
@@ -21,13 +21,13 @@ class ProductController extends Controller
     }
 
     // Show create form
-    public function create()
+    public function Create()
     {
         return view('admin.products.create');
     }
 
     // Store product
-    public function store(Request $request)
+    public function Store(Request $request)
     {
         $formFields = $request->validate([
             'name' => ['required', Rule::unique('products', 'name'), 'max:255'],
@@ -44,7 +44,7 @@ class ProductController extends Controller
     }
 
     // Show product delete page
-    public function show(Product $product)
+    public function Show(Product $product)
     {
         return view('admin.products.delete', [
             'product' => $product
@@ -52,14 +52,14 @@ class ProductController extends Controller
     }
 
     // Delete product
-    public function destroy(Product $product)
+    public function Destroy(Product $product)
     {
         $product->delete();
         return redirect('/admin/products')->with('status', 'Listing deleted successfully');
     }
 
     // Edit product
-    public function edit(Product $product)
+    public function Edit(Product $product)
     {
         return view('admin.products.edit', [
             'product' => $product
@@ -67,7 +67,7 @@ class ProductController extends Controller
     }
 
     // Update product
-    public function update(Request $request, Product $product)
+    public function Update(Request $request, Product $product)
     {
         $formFields = $request->validate([
             'name' => ['required', Rule::unique('products', 'name')->ignore($product->id), 'max:255'],
