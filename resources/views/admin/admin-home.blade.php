@@ -9,6 +9,9 @@
             {{ session('status') }}
         </div>
     @endif
-    <a href="/admin/products" class="btn btn-primary">Produktai</a>
+    <div class="container">
+        <a href="/admin/products" class="btn btn-primary">Products</a>
+    </div>
+
 
 </x-app-layout>

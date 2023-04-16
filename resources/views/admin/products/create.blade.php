@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
     <div class="container" style="width: 50%; margin-left:20%">
+        <div style="display: flex; justify-content: center;"">
+            <p>Create product</p>
+        </div>
         <form action="/admin/products" method="POST">
             @csrf
             <div class="form-group">
@@ -24,7 +27,7 @@
                     <p class="text-red-500 text-xs mt-1"> {{ $message }}</p>
                 @enderror
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Submit</button>
         </form>
     </div>
 </x-app-layout>

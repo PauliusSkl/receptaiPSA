@@ -10,6 +10,9 @@
                 {{ session('status') }}
             </div>
         @endif
+        <div style="display: flex; justify-content: center;"">
+            <p>Edit product</p>
+        </div>
         <form action="/admin/products/{{ $product->id }}/edit" method="POST">
             @csrf
             @method('PUT')
