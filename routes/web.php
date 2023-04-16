@@ -33,22 +33,22 @@ route::get('/redirect', [HomeController::class, 'redirect']);
 
 
 // All products
-Route::get('/admin/products', [ProductController::class, 'index'])->middleware('auth')->middleware('is_admin');
+Route::get('/admin/products', [ProductController::class, 'Index'])->middleware('auth')->middleware('is_admin');
 
 // Store product
-Route::post('/admin/products', [ProductController::class, 'store'])->middleware('auth');
+Route::post('/admin/products', [ProductController::class, 'Store'])->middleware('auth');
 
 // Show create form
-Route::get('/admin/products/create', [ProductController::class, 'create'])->middleware('auth');
+Route::get('/admin/products/create', [ProductController::class, 'Create'])->middleware('auth');
 
 // Show product delete page
-Route::get('/admin/products/{product}/delete', [ProductController::class, 'show'])->middleware('auth');
+Route::get('/admin/products/{product}/delete', [ProductController::class, 'Show'])->middleware('auth');
 
 // Delete product
-Route::delete('/admin/products/{product}/delete', [ProductController::class, 'destroy'])->middleware('auth');
+Route::delete('/admin/products/{product}/delete', [ProductController::class, 'Destroy'])->middleware('auth');
 
 // Edit product
-Route::get('/admin/products/{product}/edit', [ProductController::class, 'edit'])->middleware('auth');
+Route::get('/admin/products/{product}/edit', [ProductController::class, 'Edit'])->middleware('auth');
 
 // Update product
-Route::put('/admin/products/{product}/edit', [ProductController::class, 'update'])->middleware('auth');
+Route::put('/admin/products/{product}/edit', [ProductController::class, 'Update'])->middleware('auth');
