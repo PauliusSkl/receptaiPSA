@@ -9,5 +9,8 @@
             {{ session('error') }}
         </div>
     @endif
-
+    <div class="container">
+        <a href="/user/create_recipe" class="btn btn-primary">Create</a>
+        <a href="/user/show_recipes" class="btn btn-primary">Recipes</a>
+    </div>
 </x-app-layout>

@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RecipeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,6 +35,7 @@ Route::middleware([
 route::get('/redirect', [HomeController::class, 'redirect']);
 
 
+
 // All products
 Route::get('/admin/products', [ProductController::class, 'Index'])->middleware('auth')->middleware('is_admin');
 
@@ -52,3 +56,15 @@ Route::get('/admin/products/{product}/edit', [ProductController::class, 'Edit'])
 
 // Update product
 Route::put('/admin/products/{product}/edit', [ProductController::class, 'Update'])->middleware('auth');
+
+Route::post('/user/profile/product', [AuthController::class, 'Update']);
+
+
+// Create product page
+Route::get('/user/create_recipe', [RecipeController::class, 'OpenRecipeCreatePage'])->middleware('auth');
+
+// Store products
+Route::post('/user/create_recipe', [RecipeController::class, 'SubmitRecipeCreate'])->middleware('auth');
+
+//Show recipes
+Route::get('/user/show_recipes', [RecipeController::class, 'OpenRecipeListPage'])->middleware('auth');
