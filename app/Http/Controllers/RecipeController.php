@@ -21,6 +21,13 @@ class RecipeController extends Controller
         return view('player.recipe.create', compact('products', 'tools', 'categories'));
     }
 
+    public function calculateRecipeCalories(array $products): int
+    {
+        $count = count($products);
+        $calories = $count * 100;
+        return $calories;
+    }
+
     public function SubmitRecipeCreate(Request $request)
     {
         $recipe = Recipe::create([
@@ -47,8 +54,22 @@ class RecipeController extends Controller
         foreach ($categories as $category_id) {
             $recipe->kitchen_categories()->attach($category_id);
         }
+        // Calculate rating
+        $rating = $recipe->calculateRating();
+
+        // Set recipe rating
+        $recipe->rating = $rating;
+        $recipe->save();
+
+
+        $calories = $this->calculateRecipeCalories($products);
+        $recipe->calories = $calories;
+        $recipe->save();
+
         return redirect('/redirect')->with('status', 'Recipe created successfully');
     }
+
+
 
     public function OpenRecipeListPage()
     {
