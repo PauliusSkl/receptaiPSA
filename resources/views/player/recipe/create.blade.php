@@ -38,6 +38,24 @@
                 <input type="text" name="quantities[{{ $product->id }}]" id="quantities">
             @endforeach
         </div>
+
+
+        <label for="tools">Tools:</label>
+        <select name="tools[]" class="form-control" multiple>
+            @foreach ($tools as $tool)
+                <option value="{{ $tool->id }}">{{ $tool->name }}</option>
+            @endforeach
+        </select>
+
+
+        <div class="form-group">
+            <label for="tools">Kitchen Categories:</label>
+            <select name="categories[]" class="form-control" multiple>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div>
         <button type="submit">Create Recipe</button>
     </form>
 

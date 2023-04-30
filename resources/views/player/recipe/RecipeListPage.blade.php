@@ -39,6 +39,24 @@
                             @endforeach
                         </ul>
                     </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">Irankiai:</h5>
+                        <ul>
+                            @foreach ($recipe->tools as $tool)
+                                <li>{{ $tool->name }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">Virtive:</h5>
+                        <ul>
+                            @foreach ($recipe->kitchen_categories as $category)
+                                <li>{{ $category->name }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
             </div>
         @endforeach

@@ -27,6 +27,16 @@ class Recipe extends Model
         return $this->belongsToMany(Product::class)->withPivot('quantity');
     }
 
+    public function tools()
+    {
+        return $this->belongsToMany(Tool::class);
+    }
+
+    public function kitchen_categories()
+    {
+        return $this->belongsToMany(Kitchen_Category::class);
+    }
+
     public function similarRecipes()
     {
         return $this->belongsToMany(Recipe::class, 'product_recipe', 'product_id', 'recipe_id')
