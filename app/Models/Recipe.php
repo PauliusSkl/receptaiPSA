@@ -44,4 +44,18 @@ class Recipe extends Model
             ->groupBy('recipe_id')
             ->havingRaw('COUNT(*) = ?', [count($this->products)]);
     }
+
+    public function calculateRating()
+    {
+        $preparation = $this->preparation;
+        $wordCount = str_word_count($preparation);
+        $productMultipliers = $this->products()->sum('score_multiplier');
+        $toolMultipliers = $this->tools()->sum('score_multiplier');
+        $kitchenMultipliers = $this->kitchen_categories()->sum('score_multiplier');
+        // Add up the multipliers and multiply by the word count
+        $multiplierSum = $productMultipliers + $toolMultipliers + $kitchenMultipliers;
+        $multiplierProduct = $multiplierSum * $wordCount;
+        // Return the calculated rating
+        return round($multiplierProduct, 2);
+    }
 }
