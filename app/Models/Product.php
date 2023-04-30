@@ -12,6 +12,11 @@ class Product extends Model
         'name',
         'score_multiplier',
         'user_id',
+        'quantity',
+    ];
+
+    protected $casts = [
+        'quantity' => 'string',
     ];
 
     //Relationship to User who created the product
@@ -30,5 +35,11 @@ class Product extends Model
     public function getOwnerName()
     {
         return $this->user->name;
+    }
+
+    // Produkta receptui
+    public function recipes()
+    {
+        return $this->belongsToMany(Recipe::class);
     }
 }

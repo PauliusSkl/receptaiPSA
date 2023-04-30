@@ -27,7 +27,6 @@ Route::group(['middleware' => config('jetstream.middleware', ['web'])], function
     Route::group(['middleware' => array_values(array_filter([$authMiddleware, $authSessionMiddleware]))], function () {
         // User & Profile...
         Route::get('/user/profile', [UserProfileController::class, 'show'])->name('profile.show');
-        Route::post('/user/profile/product', [UserProfileController::class, 'blocked']);
 
         Route::group(['middleware' => 'verified'], function () {
             // API...
