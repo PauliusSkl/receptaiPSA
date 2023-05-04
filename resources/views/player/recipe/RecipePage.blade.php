@@ -52,7 +52,7 @@
                 </ul>
             </div>
 
-            <a href="{{ url('', $recipe->id) }}" class="btn btn-danger">Pradeti gaminima</a>
+            <a href="{{ url('/user/start_making', $recipe->id) }}" class="btn btn-danger">Pradeti gaminima</a>
             <a href="{{ url('', $recipe->id) }}" class="btn btn-primary">Valdyti produktus</a>
         </div>
     </div>

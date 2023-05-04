@@ -68,4 +68,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Product::class, 'blocked_product');
     }
+
+    // recipes that user is making
+    public function recipes()
+    {
+        return $this->belongsToMany(Recipe::class)
+            ->withPivot('status', 'img', 'start_time', 'finish_time')
+            ->withTimestamps();
+    }
 }
