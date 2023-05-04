@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tool;
+use App\Models\User;
 use App\Models\Recipe;
 use App\Models\Product;
-use App\Models\Kitchen_Category;
 use Illuminate\Http\Request;
+use App\Models\Kitchen_Category;
+use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller
 {
@@ -73,11 +75,49 @@ class RecipeController extends Controller
 
     public function OpenRecipeListPage()
     {
-
         # recipes with products and tools and categories
         $recipes = Recipe::with('products', 'tools', 'kitchen_categories')->get();
 
+        $recommendedRecipes = $this->getRecommendations(Auth::id());
         // $recipes = Recipe::with('products')->get();
-        return view('player.recipe.RecipeListPage', compact('recipes'));
+        return view('player.recipe.RecipeListPage', compact('recipes', 'recommendedRecipes'));
+    }
+
+
+    public function getRecommendations($userId)
+    {
+        // Get the user's rating
+        $userRating = User::find($userId)->rating;
+
+        // Get the user's blocked products
+        $userBlockedProducts = User::find($userId)->products()->pluck('product_id')->toArray();
+
+        $userRating = User::find($userId)->rating;
+        // $userRating = 3;
+        $productsInFridge = $this->getSmartFridgeProducts();
+
+        $recipes = Recipe::with('products', 'tools', 'kitchen_categories')
+            ->where('rating', '>=', $userRating - 200)
+            ->whereNotIn('id', function ($query) use ($userBlockedProducts) {
+                $query->select('recipe_id')
+                    ->from('product_recipe')
+                    ->whereIn('product_id', $userBlockedProducts);
+            })
+            ->whereIn('id', function ($query) use ($productsInFridge) {
+                $query->select('recipe_id')
+                    ->from('product_recipe')
+                    ->whereIn('product_id', $productsInFridge);
+            })
+            ->get();
+
+        return $recipes;
+    }
+
+    public function getSmartFridgeProducts()
+    {
+        $productIds = Product::pluck('id')->toArray();
+        shuffle($productIds);
+        $randomProductIds = array_slice($productIds, 0, rand(1, count($productIds)));
+        return $randomProductIds;
     }
 }
