@@ -72,3 +72,10 @@ Route::get('/user/show_recipes', [RecipeController::class, 'OpenRecipeListPage']
 
 // Show recipe
 Route::get('/user/show_recipes/{recipe}', [RecipeController::class, 'InitiateSelection'])->middleware('auth');
+
+
+// show recipe making page
+Route::get('/user/start_making/{recipe}', [RecipeController::class, 'StartRecipeCreation'])->middleware('auth');
+
+// post
+Route::post('/user/start_making/{recipe}', [RecipeController::class, 'StopRecipe'])->middleware('auth');

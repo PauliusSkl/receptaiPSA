@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\Kitchen_Category;
 use Illuminate\Support\Facades\Auth;
 
+use function Symfony\Component\VarDumper\Dumper\esc;
+
 class RecipeController extends Controller
 {
     public function OpenRecipeCreatePage()
@@ -126,5 +128,142 @@ class RecipeController extends Controller
     {
         $recipe = Recipe::with('products', 'tools', 'kitchen_categories')->find($id);
         return view('player.recipe.RecipePage', compact('recipe'));
+    }
+
+    public function StartRecipeCreation($id)
+    {
+        $user = User::find(Auth::id());
+        $recipe = Recipe::with('products', 'tools', 'kitchen_categories')->find($id);
+        //Check if user already has the recipe
+        $userRecipes = $user->recipes()->pluck('recipe_id')->toArray();
+        $time = $this->CalculateRecipeTime($id);
+        $recipe->preparation_time = $time;
+        $recipe->save();
+        $timeleft = $time;
+        if (in_array($id, $userRecipes)) {
+            // $user->recipes()->detach($recipe);
+            //Check start time modifie time left from start time
+            $recipeStartTime = $user->recipes()->where('recipe_id', $id)->first()->pivot->start_time;
+            $timeleft = $time - (now()->diffInSeconds($recipeStartTime));
+            if ($timeleft <= 0) {
+                $timeleft = 0;
+            }
+            return view('player.recipe.RecipeMakingPage', compact('recipe', 'timeleft'));
+        }
+
+        $user->recipes()->attach($recipe, [
+            'status' => 'unfinished',
+            'start_time' => now(),
+        ]);
+
+        return view('player.recipe.RecipeMakingPage', compact('recipe', 'timeleft'));
+    }
+
+    public function CalculateRecipeTime($id)
+    {
+        $recipe = Recipe::with('products', 'tools', 'kitchen_categories')->find($id);
+        $products = $recipe->products;
+        $time = 0;
+        foreach ($products as $product) {
+            $time += 600;
+        }
+        return $time;
+    }
+
+    public function StopRecipe($id, Request $request)
+    {
+        $user = User::find(Auth::id());
+        $recipe = Recipe::with('products', 'tools', 'kitchen_categories')->find($id);
+        // // if time expired delete recipe
+        // $recipeStartTime = $user->recipes()->where('recipe_id', $id)->first()->pivot->start_time;
+        // $time = $recipe->preparation_time;
+        // $timeleft = $time - (now()->diffInSeconds($recipeStartTime));
+        // if ($timeleft <= 0) {
+        //     $user->recipes()->detach($recipe);
+        //     return redirect('/redirect')->with('status', 'Recipe expired');
+        // }
+        // check if photo is uploaded in the form
+        if ($request->hasFile('photo')) {
+            $photo = $request->file('photo');
+            $filename = $photo->getClientOriginalName();
+            $photo->move(public_path('images'), $filename);
+            //check if food
+            $isFood = $this->CheckIfFood($filename);
+            if ($isFood) {
+                $user->recipes()->updateExistingPivot($id, [
+                    'status' => 'finished',
+                    'img' => $filename,
+                ]);
+            } else {
+                $user->recipes()->updateExistingPivot($id, [
+                    'status' => 'failed',
+                    'img' => $filename,
+                ]);
+            }
+        } else {
+            $user->recipes()->updateExistingPivot($id, [
+                'status' => 'failed',
+            ]);
+        }
+        $ratingDiff = $this->CalculateRating($id);
+        // $user->recipes()->detach($recipe);
+        return redirect('/redirect')->with('error', 'rating updated successfully with ' . $ratingDiff . ' rating');
+    }
+
+    public function CheckIfFood($photo)
+    {
+        //return true with 85% chance
+        $random = rand(1, 100);
+        if ($random <= 95) {
+            return true;
+        }
+        return false;
+    }
+
+    public function CalculateRating($id)
+    {
+        $user = User::find(Auth::id());
+        $recipe = Recipe::with('products', 'tools', 'kitchen_categories')->find($id);
+        //Check recipe status
+        $recipeStatus = $user->recipes()->where('recipe_id', $id)->first()->pivot->status;
+        $ratingToBeAdded = 0;
+        if ($recipeStatus == 'finished') {
+            $recipeRating = $recipe->rating;
+            $userRating = $user->rating;
+
+            $ratingDifference = $userRating - $recipeRating;
+            if ($ratingDifference <= 0) {
+                //Calculate time it took to make the recipe
+                $recipeStartTime = $user->recipes()->where('recipe_id', $id)->first()->pivot->start_time;
+                $time = $recipe->preparation_time;
+                $timeleft = $time - (now()->diffInSeconds($recipeStartTime));
+                $timeMultiplier = ($time / $timeleft)  + 1;
+                $ratingToBeAdded = abs($ratingDifference * $timeMultiplier);
+            } else {
+                $ratingToBeAdded = abs($ratingDifference / 10);
+            }
+            $user->rating += $ratingToBeAdded;
+            $recipe->save();
+        } else {
+            $recipeRating = $recipe->rating;
+            $userRating = $user->rating;
+            if ($userRating != 0) {
+                $ratingDifference = $userRating - $recipeRating;
+                if ($ratingDifference > 0) {
+                    $ratingToBeAdded = $ratingDifference;
+                } else {
+                    $ratingToBeAdded = abs($ratingDifference / 10);
+                }
+                $user->rating -= $ratingToBeAdded;
+                $recipe->save();
+            }
+        }
+        $user->save();
+        $user->recipes()->detach($recipe);
+
+        if ($recipeStatus == 'failed') {
+            return $ratingToBeAdded * -1;
+        }
+        return $ratingToBeAdded;
     }
 }

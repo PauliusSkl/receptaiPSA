@@ -58,4 +58,12 @@ class Recipe extends Model
         // Return the calculated rating
         return round($multiplierProduct, 2);
     }
+
+    //The ones that make this recipe
+    public function users()
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('status', 'img', 'start_time', 'finish_time')
+            ->withTimestamps();
+    }
 }
