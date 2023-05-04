@@ -120,4 +120,11 @@ class RecipeController extends Controller
         $randomProductIds = array_slice($productIds, 0, rand(1, count($productIds)));
         return $randomProductIds;
     }
+
+
+    public function InitiateSelection($id)
+    {
+        $recipe = Recipe::with('products', 'tools', 'kitchen_categories')->find($id);
+        return view('player.recipe.RecipePage', compact('recipe'));
+    }
 }

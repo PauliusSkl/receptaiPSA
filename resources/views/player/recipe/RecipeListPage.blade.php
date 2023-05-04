@@ -52,6 +52,8 @@
                             @endforeach
                         </ul>
                     </div>
+
+                    <a href="{{ url('/user/show_recipes', $recipe->id) }}" class="btn btn-primary">More info</a>
                 </div>
             </div>
         @endforeach
@@ -103,6 +105,8 @@
                             @endforeach
                         </ul>
                     </div>
+
+                    <a href="{{ url('/user/show_recipes', $recipe->id) }}" class="btn btn-primary">More info</a>
                 </div>
             </div>
         @endforeach
