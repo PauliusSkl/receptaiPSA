@@ -9,7 +9,9 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Kitchen_Category;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\ProductInfoAPI;
+use App\Http\Controllers\SmartFridgeAPI;
+use App\Http\Controllers\FoodRecognitionAI;
 use function Symfony\Component\VarDumper\Dumper\esc;
 
 class RecipeController extends Controller
@@ -25,13 +27,6 @@ class RecipeController extends Controller
         return view('player.recipe.create', compact('products', 'tools', 'categories'));
     }
 
-    public function calculateRecipeCalories(array $products): int
-    {
-        $count = count($products);
-        $calories = $count * 100;
-        return $calories;
-    }
-
     public function SubmitRecipeCreate(Request $request)
     {
         $recipe = Recipe::create([
@@ -41,10 +36,11 @@ class RecipeController extends Controller
 
         $products = $request->input('products');
         $quantities = $request->input('quantities');
-
+        $time = 0;
         foreach ($products as $product_id) {
             $quantity = $quantities[$product_id];
             $recipe->products()->attach($product_id, ['quantity' => $quantity]);
+            $time += 600;
         }
 
         $tools = $request->input('tools');
@@ -64,9 +60,10 @@ class RecipeController extends Controller
         // Set recipe rating
         $recipe->rating = $rating;
         $recipe->save();
+        $recipe->preparation_time = $time;
 
 
-        $calories = $this->calculateRecipeCalories($products);
+        $calories = ProductInfoAPI::QueryList($products);
         $recipe->calories = $calories;
         $recipe->save();
 
@@ -96,7 +93,9 @@ class RecipeController extends Controller
 
         $userRating = User::find($userId)->rating;
         // $userRating = 3;
-        $productsInFridge = $this->getSmartFridgeProducts();
+
+        //API call to get products in fridge
+        $productsInFridge = SmartFridgeAPI::GetUserProducts();
 
         $recipes = Recipe::with('products', 'tools', 'kitchen_categories')
             ->where('rating', '>=', $userRating - 200)
@@ -114,15 +113,6 @@ class RecipeController extends Controller
 
         return $recipes;
     }
-
-    public function getSmartFridgeProducts()
-    {
-        $productIds = Product::pluck('id')->toArray();
-        shuffle($productIds);
-        $randomProductIds = array_slice($productIds, 0, rand(1, count($productIds)));
-        return $randomProductIds;
-    }
-
 
     public function InitiateSelection($id)
     {
@@ -174,21 +164,12 @@ class RecipeController extends Controller
     {
         $user = User::find(Auth::id());
         $recipe = Recipe::with('products', 'tools', 'kitchen_categories')->find($id);
-        // // if time expired delete recipe
-        // $recipeStartTime = $user->recipes()->where('recipe_id', $id)->first()->pivot->start_time;
-        // $time = $recipe->preparation_time;
-        // $timeleft = $time - (now()->diffInSeconds($recipeStartTime));
-        // if ($timeleft <= 0) {
-        //     $user->recipes()->detach($recipe);
-        //     return redirect('/redirect')->with('status', 'Recipe expired');
-        // }
-        // check if photo is uploaded in the form
         if ($request->hasFile('photo')) {
             $photo = $request->file('photo');
             $filename = $photo->getClientOriginalName();
             $photo->move(public_path('images'), $filename);
             //check if food
-            $isFood = $this->CheckIfFood($filename);
+            $isFood = FoodRecognitionAI::CheckIfFood($filename);
             if ($isFood) {
                 $user->recipes()->updateExistingPivot($id, [
                     'status' => 'finished',
@@ -208,16 +189,6 @@ class RecipeController extends Controller
         $ratingDiff = $this->CalculateRating($id);
         // $user->recipes()->detach($recipe);
         return redirect('/redirect')->with('error', 'rating updated successfully with ' . $ratingDiff . ' rating');
-    }
-
-    public function CheckIfFood($photo)
-    {
-        //return true with 85% chance
-        $random = rand(1, 100);
-        if ($random <= 95) {
-            return true;
-        }
-        return false;
     }
 
     public function CalculateRating($id)
