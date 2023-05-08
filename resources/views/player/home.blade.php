@@ -12,6 +12,6 @@
     <div class="container">
         <a href="/user/create_recipe" class="d-block btn btn-primary">Create</a>
         <a href="/user/show_recipes" class="d-block btn btn-primary">Recipes</a>
-        <a href="/user/cart" class="d-block btn btn-primary">Cart</a>
+        <a href="/user/carts" class="d-block btn btn-primary">Carts</a>
     </div>
 </x-app-layout>

@@ -7,10 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class in_between_product extends Model
 {
-    protected $fillable = ['name', 'price', 'cart_id'];
+    protected $table = 'product_recipe';
 
-    public function cart()
+    protected $fillable = ['price'];
+
+    public function carts()
     {
-        return $this->belongsTo('App\Models\Cart');
+        return $this->belongsTo(User::class);
+    }
+    public function product()
+    {
+        return $this->hasOne(Product::class, 'product_id');
+    }
+    public function recipe()
+    {
+        return $this->hasOne(Recipe::class, 'recipe_id');
     }
 }

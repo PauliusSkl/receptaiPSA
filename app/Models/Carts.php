@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cart extends Model
+class Carts extends Model
 {
-    protected $fillable = ['price'];
+    protected $fillable = ['kaina'];
 
     public function in_between_products()
     {
-        return $this->hasMany('App\Models\InBetweenProduct');
+        return $this->hasOne(in_between_product::class);
     }
 
     public function user()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo(User::class);
     }
 }

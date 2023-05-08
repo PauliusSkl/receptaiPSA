@@ -76,8 +76,8 @@ class User extends Authenticatable
             ->withPivot('status', 'img', 'start_time', 'finish_time')
             ->withTimestamps();
     }
-    public function cart()
+    public function carts()
     {
-        return $this->hasOne('App\Models\Cart');
+        return $this->hasOne(Carts::class, 'users_id');
     }
 }
