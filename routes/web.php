@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -79,3 +80,5 @@ Route::get('/user/start_making/{recipe}', [RecipeController::class, 'StartRecipe
 
 // post
 Route::post('/user/start_making/{recipe}', [RecipeController::class, 'StopRecipe'])->middleware('auth');
+
+Route::get('/user/cart', [CartController::class, 'OpenUserCartPage'])->middleware('auth');
