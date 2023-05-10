@@ -11,6 +11,7 @@
     @endif
     <div class="container">
         <a href="/admin/products" class="btn btn-primary">Products</a>
+        <a href="/admin/orders" class="btn btn-primary">Orders</a>
     </div>
 
 
