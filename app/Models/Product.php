@@ -42,4 +42,14 @@ class Product extends Model
     {
         return $this->belongsToMany(Recipe::class);
     }
+
+    public function carts()
+    {
+        return $this->belongsToMany(Cart::class)->withPivot('quantity');
+    }
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class)->withPivot('quantity');
+    }
 }
