@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('recipe_id');
             $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('cart_id');
             $table->string('quantity');
             $table->timestamps();
 

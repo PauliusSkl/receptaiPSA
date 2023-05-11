@@ -10,8 +10,14 @@
         </div>
     @endif
     <div class="container">
+<<<<<<< HEAD
         <a href="/user/create_recipe" class="d-block btn btn-primary">Create</a>
         <a href="/user/show_recipes" class="d-block btn btn-primary">Recipes</a>
         <a href="/user/carts" class="d-block btn btn-primary">Carts</a>
+=======
+        <a href="/user/create_recipe" class="btn btn-primary">Create</a>
+        <a href="/user/show_recipes" class="btn btn-primary">Recipes</a>
+        <a href="/user/cart" class="btn btn-primary">Cart</a>
+>>>>>>> main
     </div>
 </x-app-layout>

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Tool;
 use App\Models\User;
 use App\Models\Recipe;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Kitchen_Category;
+use App\Http\Controllers\BarboraAPI;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProductInfoAPI;
 use App\Http\Controllers\SmartFridgeAPI;
@@ -236,5 +238,35 @@ class RecipeController extends Controller
             return $ratingToBeAdded * -1;
         }
         return $ratingToBeAdded;
+    }
+
+    public function LoadRecipeProducts($id)
+    {
+        $recipe = Recipe::with('products', 'tools', 'kitchen_categories')->find($id);
+        $user = User::find(Auth::id());
+        $userCart = $user->cart;
+        if ($userCart == null) {
+            $userCart = new Cart();
+            $userCart->user_id = $user->id;
+            $userCart->save();
+        }
+        $productsInFridge = SmartFridgeAPI::GetUserProducts();
+        $recipeProducts = $recipe->products;
+        foreach ($recipeProducts as $product) {
+            if (!in_array($product->id, $productsInFridge)) {
+                $userCart->products()->attach($product);
+                $userCart->products()->updateExistingPivot($product->id, [
+                    'quantity' => $product->pivot->quantity,
+                ]);
+            }
+        }
+        //send cart product list to CalculatePrice method and update price for each product
+        $priceList = BarboraAPI::QueryBarbora($userCart->products()->pluck('product_id')->toArray());
+        foreach ($priceList as $product => $price) {
+            $userCart->products()->updateExistingPivot($product, [
+                'price' => $price,
+            ]);
+        }
+        return redirect()->back()->with('error', 'Products added to cart successfully');
     }
 }

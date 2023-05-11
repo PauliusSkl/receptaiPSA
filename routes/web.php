@@ -1,11 +1,17 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+<<<<<<< HEAD
 use App\Http\Controllers\CartsController;
+=======
+use App\Http\Controllers\CartController;
+>>>>>>> main
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RecipeController;
+use App\Models\Cart;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,4 +87,36 @@ Route::get('/user/start_making/{recipe}', [RecipeController::class, 'StartRecipe
 // post
 Route::post('/user/start_making/{recipe}', [RecipeController::class, 'StopRecipe'])->middleware('auth');
 
+<<<<<<< HEAD
 Route::get('/user/carts', [CartsController::class, 'OpenUserCartsPage'])->middleware('auth');
+=======
+
+// mange_products
+
+Route::get('/user/manage_products/{recipe}', [RecipeController::class, 'LoadRecipeProducts'])->middleware('auth');
+
+
+//Open cart page
+Route::get('/user/cart', [CartController::class, 'OpenUserCartPage'])->middleware('auth');
+
+//Show order page
+Route::get('/user/cart/order', [OrderController::class, 'OpenOrderPage'])->middleware('auth');
+
+//Create order
+Route::post('/user/cart/order', [OrderController::class, 'SubmitAndValidate'])->middleware('auth');
+
+//Remove product from cart
+Route::post('/user/cart/{id}', [CartController::class, 'DeleteProductFromCart'])->middleware('auth');
+
+
+//Admin order page
+Route::get('/admin/orders', [OrderController::class, 'OpenAdminOrderPage'])->middleware('auth')->middleware('is_admin');
+
+
+//complete order
+Route::post('/admin/orders/complete/{order}', [OrderController::class, 'FinishOrder'])->middleware('auth')->middleware('is_admin');
+
+
+//Cancel order
+Route::post('/admin/orders/cancel/{order}', [OrderController::class, 'CancelOrder'])->middleware('auth')->middleware('is_admin');
+>>>>>>> main
