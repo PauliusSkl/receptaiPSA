@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('recipe_user', function (Blueprint $table) {
             $table->foreignId('recipe_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('status')->default('unfinished');
+            $table->string('status')->default('created');
             $table->string('img')->nullable();
             $table->dateTime('start_time')->nullable();
             $table->dateTime('finish_time')->nullable();

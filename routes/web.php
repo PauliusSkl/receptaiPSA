@@ -28,16 +28,20 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified'
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('player.home');
-    })->name('dashboard');
-});
+]);
+// ->group(function () {
+//     Route::get('/dashboard', function () {
+//         return view('player.home');
+//     })->name('dashboard');
+// });
 
 
-route::get('/redirect', [HomeController::class, 'redirect']);
+route::get('/redirect', [HomeController::class, 'redirect'])->name('dashboard');
 
-
+//Profile route
+Route::get('/user/profile', [AuthController::class, 'show'])->middleware('auth')->name('profile.show');
+//Profile delete produtc
+Route::delete('/user/profile/product/{product}/delete', [AuthController::class, 'destroy'])->middleware('auth');
 
 // All products
 Route::get('/admin/products', [ProductController::class, 'Index'])->middleware('auth')->middleware('is_admin');
