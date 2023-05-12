@@ -76,11 +76,11 @@ class RecipeController extends Controller
 
     public function OpenRecipeListPage()
     {
-        # recipes with products and tools and categories
+        $recommendedRecipes = $this->getRecommendations(Auth::id());
+
+
         $recipes = Recipe::with('products', 'tools', 'kitchen_categories')->get();
 
-        $recommendedRecipes = $this->getRecommendations(Auth::id());
-        // $recipes = Recipe::with('products')->get();
         return view('player.recipe.RecipeListPage', compact('recipes', 'recommendedRecipes'));
     }
 
@@ -260,7 +260,7 @@ class RecipeController extends Controller
                 ]);
             }
         }
-        //send cart product list to CalculatePrice method and update price for each product
+        //sends cart product list to CalculatePrice method and update price for each product
         $priceList = BarboraAPI::QueryBarbora($userCart->products()->pluck('product_id')->toArray());
         foreach ($priceList as $product => $price) {
             $userCart->products()->updateExistingPivot($product, [

@@ -4,7 +4,12 @@
             {{ __('Profile') }}
         </h2>
     </x-slot>
-
+    {{-- error print --}}
+    @if (session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
     <div>
 
 
@@ -15,6 +20,7 @@
                     <tr>
                         <th scope="col">Blocked products
                         </th>
+                        <th>Remove</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -22,6 +28,14 @@
                         <tr>
 
                             <td> {{ $product->name }}</td>
+                            <td>
+                                <form action="/user/profile/product/{{ $product->id }}/delete" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger"><i class="fa-solid fa-trash"></i>
+                                        Delete</button>
+                                </form>
+                            </td>
 
                         </tr>
                     @endforeach
